@@ -23,3 +23,11 @@ TMDB API – movie and series metadata
 YouTube Data API – trailer playback
 HTML5 / CSS3
 Git & GitHub – version control
+
+# Architecture 
+Component-based UI design
+Clear separation of concerns (API layer, components, pages)
+Reusable and scalable layout structure
+Centralised API service modules
+Environment-based configuration for API keys
+Clean routing and state management using React hooks
