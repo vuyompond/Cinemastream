@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/NavBar/Navbar";
+import Navbar from "../../Components/NavBar/NavBar";
 import TrailerModal from "../../Components/Modal/TrailerModal";
 import { fetchGenres } from "../../api/tmdb";  
 import { fetchYoutubeTrailer } from "../../api/youtube";

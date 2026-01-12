@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Home.css';
-import Navbar from '../../Components/NavBar/Navbar';
+import Navbar from '../../Components/NavBar/NavBar';
 import Banner from '../../Components/Banner/Banner';
 import Row from '../../Components/MovieRows/Row';
 import TrailerModal from "../../Components/Modal/TrailerModal";
