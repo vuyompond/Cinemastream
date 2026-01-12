@@ -1,8 +1,7 @@
-# Cinemastream
- CinemaStream – Streaming Web Application (Frontend)
-CinemaStream is a Netflix-style streaming web application built as part of my growth as a Graduate Software Engineer. The project focuses on designing and implementing a modern, responsive frontend that consumes real-world APIs and delivers an engaging media-browsing experience.
-This repository contains the frontend implementation, built using React, with a strong emphasis on clean UI architecture, component reusability, and real-world data integration.
- Features
+# Cinemastream Streaming Web Application 
+CinemaStream is a Netflix-style streaming web application built as part of my growth as a Graduate Software Engineer. The project focuses on designing and implementing a modern, responsive frontend that consumes real-world APIs and delivers an engaging media-browsing experience.This repository contains the frontend implementation, built using React, with a strong emphasis on clean UI architecture, component reusability, and real-world data integration.
+
+# Features
 Browse trending, popular movies and TV series
 Dynamic banner showcasing featured content
 Horizontal content rows with smooth scrolling
@@ -15,7 +14,8 @@ Overview
 Genres
 Cast (top actors)
 Fully responsive, modern UI inspired by popular streaming platforms
- Technologies Used
+
+# Technologies Used
 React.js
 JavaScript (ES6+)
 React Router
