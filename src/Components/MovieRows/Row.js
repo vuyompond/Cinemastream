@@ -8,17 +8,25 @@ function Row({ title, fetchFunction, onMovieClick }) {
 
   useEffect(() => {
     const loadMovies = async () => {
-      const data = await fetchFunction();
-      setMovies(data);
+      try {
+        const data = await fetchFunction();
+        setMovies(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error(`Failed to load movies for row: ${title}`, error);
+        setMovies([]);
+      }
     };
+
     loadMovies();
-  }, [fetchFunction]);
+  }, [fetchFunction, title]);
 
   const scrollLeft = () => {
+    if (!rowRef.current) return;
     rowRef.current.scrollBy({ left: -500, behavior: 'smooth' });
   };
 
   const scrollRight = () => {
+    if (!rowRef.current) return;
     rowRef.current.scrollBy({ left: 500, behavior: 'smooth' });
   };
 
@@ -27,11 +35,17 @@ function Row({ title, fetchFunction, onMovieClick }) {
       <h2 className="row-title">{title}</h2>
       <div className="row-wrapper">
         <button className="scroll-button left" onClick={scrollLeft}>&lt;</button>
+
         <div className="row-movies" ref={rowRef}>
-          {movies.map((movie, index) => (
-            <MovieCard key={index} movie={movie} onClick={() => onMovieClick(movie)} />
+          {(movies || []).map((movie, index) => (
+            <MovieCard
+              key={movie?.id ?? index}
+              movie={movie}
+              onClick={() => onMovieClick && onMovieClick(movie)}
+            />
           ))}
         </div>
+
         <button className="scroll-button right" onClick={scrollRight}>&gt;</button>
       </div>
     </div>
@@ -39,4 +53,3 @@ function Row({ title, fetchFunction, onMovieClick }) {
 }
 
 export default Row;
-

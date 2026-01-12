@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/NavBar/NavBar"
+import Navbar from "../../Components/NavBar/NavBar";
 import TrailerModal from "../../Components/Modal/TrailerModal";
 import { fetchSeriesGenres } from "../../api/tmdb";
 import { fetchYoutubeTrailer } from "../../api/youtube";
@@ -23,7 +23,17 @@ function Series() {
   });
 
   useEffect(() => {
-    fetchSeriesGenres().then(setGenres);
+    const loadGenres = async () => {
+      try {
+        const g = await fetchSeriesGenres();
+        setGenres(Array.isArray(g) ? g : []);
+      } catch (e) {
+        console.error("Failed to load series genres", e);
+        setGenres([]);
+      }
+    };
+
+    loadGenres();
   }, []);
 
   useEffect(() => {
@@ -44,7 +54,9 @@ function Series() {
       let url = "";
 
       if (searchTerm.trim()) {
-        url = `https://api.themoviedb.org/3/search/tv?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}&query=${encodeURIComponent(searchTerm)}`;
+        url = `https://api.themoviedb.org/3/search/tv?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}&query=${encodeURIComponent(
+          searchTerm
+        )}`;
       } else {
         url = `https://api.themoviedb.org/3/discover/tv?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}${
           selectedGenre ? `&with_genres=${selectedGenre}` : ""
@@ -53,9 +65,12 @@ function Series() {
 
       const res = await fetch(url);
       const data = await res.json();
-      setSeriesList((prev) => (reset ? data.results : [...prev, ...data.results]));
+
+      const results = Array.isArray(data?.results) ? data.results : [];
+      setSeriesList((prev) => (reset ? results : [...prev, ...results]));
     } catch (err) {
       console.error("Failed to load series", err);
+      if (reset) setSeriesList([]);
     }
     setLoading(false);
   };
@@ -67,14 +82,13 @@ function Series() {
       const details = await res.json();
 
       const title = details.name || details.title || "";
-
       const url = await fetchYoutubeTrailer(title);
 
       setTrailerUrl(url);
       setModalContent({
         name: title,
-        overview: details.overview,
-        genres: details.genres,
+        overview: details.overview || "",
+        genres: Array.isArray(details.genres) ? details.genres : [],
         actors: details.credits?.cast?.slice(0, 5) || [],
       });
       setModalOpen(true);
@@ -85,53 +99,51 @@ function Series() {
   };
 
   return (
-  
     <div className="series-page">
       <Navbar />
-      
+
       <div className="series-content">
-      <div className="filter-bar">
-        <h2 className="page-title"> Series
-       
-        </h2>
-        
-        <div className="search-bar">
-          <input
-            type="text"
-            placeholder="Search series by name..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(1);
-              setSeriesList([]);
-            }}
-            style={{ width: "100%", padding: "8px", fontSize: "16px" }}
-          />
+        <div className="filter-bar">
+          <h2 className="page-title">Series</h2>
+
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search series by name..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+                setSeriesList([]);
+              }}
+              style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+            />
+          </div>
+
+          <div className="genre-filter">
+            <label
+              htmlFor="series-genre-select"
+              style={{ marginRight: "10px", fontWeight: "bold" }}
+            >
+              Genre:
+            </label>
+            <select
+              id="series-genre-select"
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+            >
+              <option value="">Select Genre</option>
+              {(genres || []).map((genre) => (
+                <option key={genre.id} value={genre.id}>
+                  {genre.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="genre-filter">
-          <label
-            htmlFor="series-genre-select"
-            style={{ marginRight: "10px", fontWeight: "bold" }}
-          >
-            Genre:
-          </label>
-          <select
-            id="series-genre-select"
-            value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-          >
-            <option value="">Select Genre</option>
-            {genres.map((genre) => (
-              <option key={genre.id} value={genre.id}>
-                {genre.name}
-              </option>
-            ))}
-          </select>
-        </div>
-</div>
         <div className="series-grid">
-          {seriesList.map((show) => (
+          {(seriesList || []).map((show) => (
             <div
               key={show.id}
               className="series-card"

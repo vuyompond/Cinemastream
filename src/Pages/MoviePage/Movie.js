@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../../Components/NavBar/NavBar";
+import NavBar from "../../Components/NavBar/NavBar";
 import TrailerModal from "../../Components/Modal/TrailerModal";
-import { fetchGenres } from "../../api/tmdb";  
+import { fetchGenres } from "../../api/tmdb";
 import { fetchYoutubeTrailer } from "../../api/youtube";
-import "./Movies.css"; 
+import "./Movie.css";
 
 function Movies() {
   const [movieList, setMovieList] = useState([]);
@@ -23,7 +23,17 @@ function Movies() {
   });
 
   useEffect(() => {
-    fetchGenres().then(setGenres);
+    const loadGenres = async () => {
+      try {
+        const g = await fetchGenres();
+        setGenres(Array.isArray(g) ? g : []);
+      } catch (e) {
+        console.error("Failed to load genres", e);
+        setGenres([]);
+      }
+    };
+
+    loadGenres();
   }, []);
 
   useEffect(() => {
@@ -44,7 +54,9 @@ function Movies() {
       let url = "";
 
       if (searchTerm.trim()) {
-        url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}&query=${encodeURIComponent(searchTerm)}`;
+        url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}&query=${encodeURIComponent(
+          searchTerm
+        )}`;
       } else {
         url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}${
           selectedGenre ? `&with_genres=${selectedGenre}` : ""
@@ -53,9 +65,12 @@ function Movies() {
 
       const res = await fetch(url);
       const data = await res.json();
-      setMovieList((prev) => (reset ? data.results : [...prev, ...data.results]));
+
+      const results = Array.isArray(data?.results) ? data.results : [];
+      setMovieList((prev) => (reset ? results : [...prev, ...results]));
     } catch (err) {
       console.error("Failed to load movies", err);
+      if (reset) setMovieList([]);
     }
     setLoading(false);
   };
@@ -67,14 +82,13 @@ function Movies() {
       const details = await res.json();
 
       const title = details.title || details.name || "";
-
       const url = await fetchYoutubeTrailer(title);
 
       setTrailerUrl(url);
       setModalContent({
         name: title,
-        overview: details.overview,
-        genres: details.genres,
+        overview: details.overview || "",
+        genres: Array.isArray(details.genres) ? details.genres : [],
         actors: details.credits?.cast?.slice(0, 5) || [],
       });
       setModalOpen(true);
@@ -85,50 +99,52 @@ function Movies() {
   };
 
   return (
-    <div className="series-page"> 
-      <Navbar />
+    <div className="series-page">
+      <NavBar />
+
       <div className="series-content">
-      <div className="filter-bar">
-        <h2 className="page-title">Movies</h2>
+        <div className="filter-bar">
+          <h2 className="page-title">Movies</h2>
 
-        <div className="search-bar" style={{ marginBottom: "20px" }}>
-          <input
-            type="text"
-            placeholder="Search movies by name..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setPage(1);
-              setMovieList([]);
-            }}
-            style={{ width: "100%", padding: "8px", fontSize: "16px" }}
-          />
-        </div>
+          <div className="search-bar" style={{ marginBottom: "20px" }}>
+            <input
+              type="text"
+              placeholder="Search movies by name..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+                setMovieList([]);
+              }}
+              style={{ width: "100%", padding: "8px", fontSize: "16px" }}
+            />
+          </div>
 
-        <div className="genre-filter">
-          <label
-            htmlFor="movie-genre-select"
-            style={{ marginRight: "10px", fontWeight: "bold" }}
-          >
-            Genre:
-          </label>
-          <select
-            id="movie-genre-select"
-            value={selectedGenre}
-            onChange={(e) => setSelectedGenre(e.target.value)}
-          >
-            <option value="">Select Genre</option>
-            {genres.map((genre) => (
-              <option key={genre.id} value={genre.id}>
-                {genre.name}
-              </option>
-            ))}
-          </select>
+          <div className="genre-filter">
+            <label
+              htmlFor="movie-genre-select"
+              style={{ marginRight: "10px", fontWeight: "bold" }}
+            >
+              Genre:
+            </label>
+
+            <select
+              id="movie-genre-select"
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+            >
+              <option value="">Select Genre</option>
+              {(genres || []).map((genre) => (
+                <option key={genre.id} value={genre.id}>
+                  {genre.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
         <div className="series-grid">
-          {movieList.map((movie) => (
+          {(movieList || []).map((movie) => (
             <div
               key={movie.id}
               className="series-card"
@@ -169,6 +185,3 @@ function Movies() {
 }
 
 export default Movies;
-
-
-

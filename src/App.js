@@ -1,10 +1,9 @@
-// Imports for page routes
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 import LandingPage from './Pages/LandingPage/LandingPage';
 import Home from './Pages/HomePage/Home';
-import Movies from './Pages/MoviePage/Movies';
+import Movies from './Pages/MoviePage/Movie';
 import Series from './Pages/SeriesPage/Series';
 
 function App() {
@@ -22,4 +21,3 @@ function App() {
 }
 
 export default App;
-
