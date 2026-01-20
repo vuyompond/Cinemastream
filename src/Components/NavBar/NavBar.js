@@ -48,9 +48,10 @@ function NavBar() {
         {/* Navigation links */}
         <Box sx={{ display: "flex", gap: 1 }}>
           {[
-            { label: "Home", to: "/" },
+            { label: "Home", to: "/home" },
             { label: "Movies", to: "/movies" },
             { label: "Series", to: "/series" },
+            { label: "Logout", to: "/landingpage" },
           ].map((item) => (
             <Button
               key={item.to}
