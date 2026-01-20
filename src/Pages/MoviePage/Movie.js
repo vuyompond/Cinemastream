@@ -3,7 +3,30 @@ import NavBar from "../../Components/NavBar/NavBar";
 import TrailerModal from "../../Components/Modal/TrailerModal";
 import { fetchGenres } from "../../api/tmdb";
 import { fetchYoutubeTrailer } from "../../api/youtube";
-import "./Movie.css";
+
+// MUI
+import {
+  Box,
+  Container,
+  Paper,
+  Typography,
+  Divider,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Card,
+  CardActionArea,
+  CardMedia,
+  CardContent,
+  Button,
+  Stack,
+  Chip,
+} from "@mui/material";
+import MovieRoundedIcon from "@mui/icons-material/MovieRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 
 function Movies() {
   const [movieList, setMovieList] = useState([]);
@@ -32,7 +55,6 @@ function Movies() {
         setGenres([]);
       }
     };
-
     loadGenres();
   }, []);
 
@@ -54,11 +76,13 @@ function Movies() {
       let url = "";
 
       if (searchTerm.trim()) {
-        url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}&query=${encodeURIComponent(
-          searchTerm
-        )}`;
+        url = `https://api.themoviedb.org/3/search/movie?api_key=${
+          process.env.REACT_APP_TMDB_API_KEY
+        }&language=en-US&page=${page}&query=${encodeURIComponent(searchTerm)}`;
       } else {
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_TMDB_API_KEY}&language=en-US&page=${page}${
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${
+          process.env.REACT_APP_TMDB_API_KEY
+        }&language=en-US&page=${page}${
           selectedGenre ? `&with_genres=${selectedGenre}` : ""
         }`;
       }
@@ -98,77 +122,204 @@ function Movies() {
     }
   };
 
+  const activeGenreName =
+    selectedGenre && Array.isArray(genres)
+      ? genres.find((g) => String(g.id) === String(selectedGenre))?.name
+      : "";
+
   return (
-    <div className="series-page">
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        color: "text.primary",
+        position: "relative",
+        backgroundImage: `radial-gradient(1200px 600px at 20% -10%, rgba(144, 202, 249, 0.14), transparent 60%),
+                          radial-gradient(900px ivati 500px at 90% 10%, rgba(206, 147, 216, 0.10), transparent 55%),
+                          radial-gradient(1000px 600px at 50% 110%, rgba(255, 245, 157, 0.08), transparent 60%)`,
+      }}
+    >
       <NavBar />
 
-      <div className="series-content">
-        <div className="filter-bar">
-          <h2 className="page-title">Movies</h2>
+      {/* Spacer for fixed/sticky navbar */}
+      <Box sx={{ height: { xs: 64, md: 72 } }} />
 
-          <div className="search-bar" style={{ marginBottom: "20px" }}>
-            <input
-              type="text"
-              placeholder="Search movies by name..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-                setMovieList([]);
-              }}
-              style={{ width: "100%", padding: "8px", fontSize: "16px" }}
-            />
-          </div>
+      <Container maxWidth="xl" sx={{ py: { xs: 3, md: 4 } }}>
+        {/* Header */}
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: 4,
+            p: { xs: 2, md: 2.5 },
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "rgba(0,0,0,0.25)",
+            backdropFilter: "blur(8px)",
+            mb: { xs: 2.5, md: 3 },
+          }}
+        >
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            alignItems={{ xs: "stretch", md: "center" }}
+            justifyContent="space-between"
+          >
+            <Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <MovieRoundedIcon sx={{ opacity: 0.9 }} />
+                <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: 0.2 }}>
+                  Movies
+                </Typography>
+              </Box>
 
-          <div className="genre-filter">
-            <label
-              htmlFor="movie-genre-select"
-              style={{ marginRight: "10px", fontWeight: "bold" }}
+              <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5 }}>
+                Browse by genre or search by title.
+              </Typography>
+
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
+                {searchTerm.trim() ? (
+                  <Chip
+                    size="small"
+                    icon={<SearchRoundedIcon />}
+                    label={`Search: "${searchTerm.trim()}"`}
+                    onDelete={() => setSearchTerm("")}
+                    sx={{ borderRadius: 999 }}
+                  />
+                ) : null}
+
+                {activeGenreName ? (
+                  <Chip
+                    size="small"
+                    icon={<TuneRoundedIcon />}
+                    label={`Genre: ${activeGenreName}`}
+                    onDelete={() => setSelectedGenre("")}
+                    sx={{ borderRadius: 999 }}
+                  />
+                ) : null}
+              </Box>
+            </Box>
+
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              sx={{ width: { xs: "100%", md: "62%" } }}
             >
-              Genre:
-            </label>
-
-            <select
-              id="movie-genre-select"
-              value={selectedGenre}
-              onChange={(e) => setSelectedGenre(e.target.value)}
-            >
-              <option value="">Select Genre</option>
-              {(genres || []).map((genre) => (
-                <option key={genre.id} value={genre.id}>
-                  {genre.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="series-grid">
-          {(movieList || []).map((movie) => (
-            <div
-              key={movie.id}
-              className="series-card"
-              onClick={() => openTrailerModal(movie, "movie")}
-              style={{ cursor: "pointer" }}
-            >
-              <img
-                className="series-poster"
-                src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-                alt={movie.title}
+              <TextField
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                  setMovieList([]);
+                }}
+                placeholder="Search movies by name..."
+                fullWidth
+                size="medium"
+                InputProps={{
+                  startAdornment: (
+                    <Box sx={{ display: "flex", alignItems: "center", mr: 1, opacity: 0.7 }}>
+                      <SearchRoundedIcon />
+                    </Box>
+                  ),
+                }}
               />
-              <div className="series-info">
-                <h3 className="series-title">{movie.title}</h3>
-              </div>
-            </div>
-          ))}
-        </div>
 
-        <div className="load-more">
-          <button onClick={() => setPage((p) => p + 1)} disabled={loading}>
+              <FormControl fullWidth>
+                <InputLabel id="movie-genre-select-label">Genre</InputLabel>
+                <Select
+                  labelId="movie-genre-select-label"
+                  value={selectedGenre}
+                  label="Genre"
+                  onChange={(e) => setSelectedGenre(e.target.value)}
+                >
+                  <MenuItem value="">
+                    <em>All Genres</em>
+                  </MenuItem>
+                  {(genres || []).map((genre) => (
+                    <MenuItem key={genre.id} value={genre.id}>
+                      {genre.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Stack>
+          </Stack>
+
+          <Divider sx={{ mt: 2, opacity: 0.6 }} />
+        </Paper>
+
+        {/* CSS Grid Poster Wall */}
+        <Box
+          sx={{
+            display: "grid",
+            gap: { xs: 2, md: 2.5 },
+            gridTemplateColumns: {
+              xs: "repeat(2, 1fr)",   // phones
+              sm: "repeat(3, 1fr)",   // small screens
+              md: "repeat(4, 1fr)",   // medium
+              lg: "repeat(6, 1fr)",   // large (poster wall)
+              xl: "repeat(7, 1fr)",   // extra large
+            },
+          }}
+        >
+          {(movieList || []).map((movie) => {
+            const poster = movie.poster_path
+              ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
+              : "";
+
+            return (
+              <Card
+                key={movie.id}
+                elevation={0}
+                sx={{
+                  borderRadius: 3,
+                  bgcolor: "rgba(0,0,0,0.35)",
+                  overflow: "hidden",
+                  transition: "transform .2s",
+                  "&:hover": { transform: "scale(1.04)" },
+                }}
+              >
+                <CardActionArea onClick={() => openTrailerModal(movie, "movie")}>
+                  <CardMedia
+                    component="img"
+                    image={poster}
+                    alt={movie.title}
+                    sx={{
+                      width: "100%",
+                      aspectRatio: "2 / 3",
+                      objectFit: "cover",
+                      bgcolor: "rgba(255,255,255,0.06)",
+                    }}
+                  />
+                  <CardContent sx={{ py: 1 }}>
+                    <Typography variant="body2" align="center" sx={{ fontWeight: 500 }}>
+                      {movie.title}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            );
+          })}
+        </Box>
+
+        {/* Load more */}
+        <Box sx={{ display: "flex", justifyContent: "center", mt: { xs: 3, md: 4 } }}>
+          <Button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={loading}
+            variant="contained"
+            size="large"
+            sx={{
+              textTransform: "none",
+              fontWeight: 700,
+              borderRadius: 999,
+              px: 3,
+              py: 1.1,
+            }}
+          >
             {loading ? "Loading..." : "Load More"}
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Container>
 
       <TrailerModal
         isOpen={modalOpen}
@@ -180,7 +331,7 @@ function Movies() {
           setModalContent({ name: "", overview: "", genres: [], actors: [] });
         }}
       />
-    </div>
+    </Box>
   );
 }
 
