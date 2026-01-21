@@ -98,14 +98,14 @@ export default function LandingPage() {
         </Toolbar>
       </AppBar>
 
-      {/* Hero */}
+      {/* ================= HERO ================= */}
       <Paper
         elevation={0}
         sx={{
-          mt: 4,
-          mb: 4,
+          mt: 5,
+          mb: 5,
           borderRadius: 5,
-          p: { xs: 3, md: 5 },
+          p: { xs: 3, md: 6 },
           border: "1px solid",
           borderColor: "divider",
           bgcolor: "rgba(0,0,0,0.25)",
@@ -114,6 +114,7 @@ export default function LandingPage() {
           overflow: "hidden",
         }}
       >
+        {/* Gradient overlay */}
         <Box
           sx={{
             position: "absolute",
@@ -124,29 +125,42 @@ export default function LandingPage() {
           }}
         />
 
-        <Box sx={{ position: "relative" }}>
+        {/* Centered Content */}
+        <Box
+          sx={{
+            position: "relative",
+            maxWidth: 900,
+            mx: "auto",
+            textAlign: "center",
+          }}
+        >
           <Typography
             variant="h3"
             sx={{
               fontWeight: 900,
-              mb: 1,
-              fontSize: { xs: "1.9rem", sm: "2.4rem", md: "3rem" },
-              lineHeight: 1.05,
+              mb: 2,
+              fontSize: { xs: "1.9rem", sm: "2.5rem", md: "3.1rem" },
+              lineHeight: 1.1,
             }}
           >
             Get access to the best movies and TV shows
           </Typography>
 
-          <Typography sx={{ opacity: 0.85 }}>
+          <Typography sx={{ opacity: 0.85, mb: 1 }}>
             Stream your favourite content anytime, anywhere.
           </Typography>
-
           <Button
             component={Link}
             to="/register"
             variant="contained"
             size="large"
-            sx={{ mt: 3, borderRadius: 999, fontWeight: 900, textTransform: "none" }}
+            sx={{
+              borderRadius: 999,
+              fontWeight: 900,
+              textTransform: "none",
+              px: 4,
+              py: 1.3,
+            }}
           >
             Get Started
           </Button>
@@ -191,15 +205,6 @@ function RowSection({ title, icon, items }) {
           gap: { xs: 2, md: 2.5 },
           overflowX: "auto",
           pb: 1,
-          scrollSnapType: "x mandatory",
-
-          // Hide scrollbar (optional)
-          "&::-webkit-scrollbar": { height: 8 },
-          "&::-webkit-scrollbar-thumb": {
-            background: "rgba(255,255,255,0.18)",
-            borderRadius: 999,
-          },
-          "&::-webkit-scrollbar-track": { background: "rgba(255,255,255,0.06)" },
         }}
       >
         {items.map((item) => {
@@ -214,14 +219,13 @@ function RowSection({ title, icon, items }) {
               elevation={0}
               sx={{
                 flex: "0 0 auto",
-                width: { xs: 170, sm: 190, md: 210 }, // 👈 controls poster size
+                width: { xs: 170, sm: 190, md: 210 },
                 borderRadius: 4,
                 border: "1px solid",
                 borderColor: "divider",
                 bgcolor: "rgba(0,0,0,0.25)",
                 backdropFilter: "blur(8px)",
                 overflow: "hidden",
-                scrollSnapAlign: "start",
                 transition: "transform 180ms ease, box-shadow 180ms ease",
                 "&:hover": {
                   transform: "translateY(-4px)",
