@@ -133,7 +133,7 @@ function Home() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
             <TvRoundedIcon sx={{ opacity: 0.9 }} />
             <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: 0.2 }}>
-              Trending Series
+              Trending TV Series
             </Typography>
           </Box>
 

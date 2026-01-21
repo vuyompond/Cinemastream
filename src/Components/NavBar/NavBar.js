@@ -50,7 +50,7 @@ function NavBar() {
           {[
             { label: "Home", to: "/home" },
             { label: "Movies", to: "/movies" },
-            { label: "Series", to: "/series" },
+            { label: " TV Series", to: "/series" },
             { label: "Logout", to: "/landingpage" },
           ].map((item) => (
             <Button
